@@ -22,6 +22,7 @@ import qualified Distribution.Parsec             as C
 import qualified Distribution.Types.Version as C
 import qualified Distribution.Types.VersionInterval as C
 import qualified Distribution.Types.VersionRange as C
+import qualified Distribution.Types.PackageVersionConstraint as C
 
 import Distribution.Pretty (pretty)
 
@@ -35,6 +36,7 @@ main = join . customExecParser (prefs showHelpOnError) $
   where
     parser :: Parser (IO ())
     parser = pure work
+      <*> switch (long "cabal-project" <> help "create cabal.project.local syntax")
       <*> switch (long "allow-newer" <> help "also create --allow-newer flags")
       <*> strArgument
           (metavar "CABALFILE" <> help "cabal file to read (.cabal)")
@@ -121,12 +123,19 @@ cleanChanges changes =
     [ (pname, ([old], new)) | (pname, old, new) <- changes, old /= new ]
 
 
-work :: Bool -> FilePath -> IO ()
-work allow_newer cabalfile = do
+work :: Bool -> Bool -> FilePath -> IO ()
+work config_syntax allow_newer cabalfile = do
     contents <- BS.readFile cabalfile
     let Deps upper_bounds = collectDeps contents
-    putStrLn $ render $ hsep
+    if config_syntax
+      then putStrLn $ render $ vcat $
         -- We are not using C.PackageVersionConstraint's pretty syntax to avoid the space
-        [ ("\"--constraint=" <> pretty pkg <> pretty (C.majorBoundVersion version) <> "\"") <+>
+        [ "constraints:" <+> pretty (C.PackageVersionConstraint pkg (C.majorBoundVersion version))
+        | (pkg, version) <- M.toList upper_bounds ] ++
+        [ "allow-newer:" <+> pretty pkg
+        | allow_newer, (pkg, _version) <- M.toList upper_bounds ]
+      else putStrLn $ render $ hsep
+        -- We are not using C.PackageVersionConstraint's pretty syntax to avoid the space
+        [ (doubleQuotes $ "--constraint=" <> pretty (C.PackageVersionConstraint pkg (C.majorBoundVersion version))) <+>
           (if allow_newer then "--allow-newer=" <> pretty pkg else mempty)
         | (pkg, version) <- M.toList upper_bounds ]
