@@ -37,19 +37,17 @@ jobs:
     - name: Build
       run: cabal build --enable-executable-static
 
-    - run: mv dist-newstyle/build/*/*/cabal-plan-bounds-*/x/cabal-plan-bounds/build/cabal-plan-bounds/cabal-plan-bounds .
-    - run: mv dist-newstyle/build/*/*/cabal-plan-bounds-*/x/cabal-force-upper-bound/build/cabal-force-upper-bound/cabal-force-upper-bound .
+    - run: mv dist-newstyle/build/*/*/cabal-force-upper-bounds-*/x/cabal-force-upper-bound/build/cabal-force-upper-bound/cabal-force-upper-bound .
 
     - name: Strip
       run: |
-        strip cabal-plan-bounds cabal-force-upper-bound
+        strip cabal-force-upper-bound
 
     - name: File information
-      run: ls -sh cabal-plan-bounds cabal-force-upper-bound; file cabal-plan-bound cabal-force-upper-bounds
+      run: ls -sh cabal-force-upper-bound; file cabal-force-upper-bounds
 
     - name: Gzip and rename
       run: |
-        gzip -S .linux.gz cabal-plan-bounds
         gzip -S .linux.gz cabal-force-upper-bound
         ls -sh *.gz
 
@@ -57,7 +55,6 @@ jobs:
       with:
         name: static-build
         path: |
-          cabal-plan-bounds.linux.gz
           cabal-force-upper-bound.linux.gz
 
   enumerate:
@@ -115,9 +112,6 @@ jobs:
     - name: Special handling for upper-bounds
       if: matrix.plan == 'upper-bounds'
       run: |
-        #curl -L https://github.com/nomeata/cabal-plan-bounds/releases/download/test-cabal-force-upper-bound/cabal-force-upper-bound.linux.gz | gunzip  > /usr/local/bin/cabal-force-upper-bound
-        #chmod +x /usr/local/bin/cabal-force-upper-bound
-        #
         echo -n "extra_flags=" >> $GITHUB_ENV
         ./static-build/cabal-force-upper-bound.linux --allow-newer *.cabal >> $GITHUB_ENV
 
@@ -136,7 +130,6 @@ jobs:
     runs-on: ubuntu-latest
     name: Calculate cabal bounds
     needs:
-    - static
     - build
     steps:
     - uses: actions/checkout@v3
@@ -147,8 +140,10 @@ jobs:
         name: static-build
         path: static-build
 
-    - run: gunzip static-build/cabal-plan-bounds.linux.gz
-    - run: chmod +x static-build/cabal-plan-bounds.linux
+    - name: Fetch cabal-plan-bounds
+      run: |
+        curl -L https://github.com/nomeata/cabal-plan-bounds/releases/latest/download/cabal-plan-bounds.linux.gz | gunzip  > /usr/local/bin/cabal-plan-bounds
+        chmod +x /usr/local/bin/cabal-plan-bounds
 
     - name: Load plans
       uses: actions/download-artifact@v3
@@ -158,9 +153,9 @@ jobs:
 
     - run: find plans/
 
-    - run: ./static-build/cabal-plan-bounds.linux plans/*.json -c cabal-plan-bounds.cabal
+    - run: cabal-plan-bounds plans/*.json -c *.cabal
 
-    - run: git diff cabal-plan-bounds.cabal
+    - run: git diff *.cabal
 
     - name: Push updated .cabal file if labeled update-bounds
       if: contains(github.event.pull_request.labels.*.name, 'update-bounds')
@@ -170,7 +165,7 @@ jobs:
         file_pattern: '*.cabal'
 
     - name: Fail if .cabal file was changed
-      run: git diff-files --quiet cabal-plan-bounds.cabal|| exit 1
+      run: git diff-files --quiet *.cabal|| exit 1
 
   release:
     name: Release binary

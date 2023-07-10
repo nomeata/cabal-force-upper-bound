@@ -1,5 +1,5 @@
-cabal-plan-bounds: generate cabal bounds from actual build plans
-================================================================
+cabal-force-upper-bounds
+========================
 
 What?
 -----
@@ -41,4 +41,10 @@ This goes well with
 
  * [`haskell-bounds-bump-action`](https://github.com/nomeata/haskell-bounds-bump-action), auto-bumping dependency ranges
  * [`haskell-plan-bounds`](https://github.com/nomeata/cabal-plan-bounds), Generating dependencies from the actual CI builds
+
+Contact
+-------
+
+This action was created by Joachim Breitner <mail@joachim-breitner.de>,
+initially, during [MuniHac 2023](https://munihac.de/2023.html).
 
