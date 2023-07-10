@@ -21,6 +21,4 @@ for name in "${names[@]}"; do
   plans+=("dist-$name/cache/plan.json")
 done
 
-# On any other project, the following line would presumably fetch
-# cabal-plan-bounds from some release
-cabal -v0 run --project-file "ci-configs/${names[0]}.config" --builddir "dist-${names[0]}" cabal-plan-bounds -- "${plans[@]}" -c cabal-plan-bounds.cabal
+cabal-plan-bounds "${plans[@]}" -c cabal-plan-bounds.cabal

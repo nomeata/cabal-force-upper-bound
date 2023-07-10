@@ -1,4 +1,4 @@
-with import (builtins.fetchTarball https://github.com/NixOS/nixpkgs/archive/8a307766007b3d904793657ae408b43927d13fff.tar.gz) { };
+with import (builtins.fetchTarball https://github.com/NixOS/nixpkgs/archive/6fb7c460bab8d17009a5a50d6ca9e65d6245b677.tar.gz) { };
 stdenv.mkDerivation rec {
   name = "env";
   buildInputs = [
@@ -7,7 +7,8 @@ stdenv.mkDerivation rec {
     haskell.compiler.ghc924
     haskell.compiler.ghc925
     haskell.compiler.ghc944
-    haskell.compiler.ghc961
+    haskell.compiler.ghc962
     ghcid
+    haskellPackages.cabal-plan-bounds
   ];
 }
