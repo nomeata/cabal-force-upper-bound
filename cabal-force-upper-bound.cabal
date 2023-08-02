@@ -1,5 +1,5 @@
 cabal-version:      3.0
-name:               cabal-force-upper-bounds
+name:               cabal-force-upper-bound
 version:            0.1
 synopsis:           Reliably exercise upper bounds of your cabal dependencies
 description:
@@ -15,7 +15,7 @@ license:            BSD-2-Clause
 license-file:       LICENSE
 author:             Joachim Breitner
 maintainer:         mail@joachim-breitner.de
-homepage:           https://github.com/nomeata/cabal-force-upper-bounds
+homepage:           https://github.com/nomeata/cabal-force-upper-bound
 copyright:          2023
 category:           Distribution
 build-type:         Simple
@@ -39,4 +39,4 @@ executable cabal-force-upper-bound
 
 source-repository head
   type:     git
-  location: https://github.com/nomeata/cabal-force-upper-bounds
+  location: https://github.com/nomeata/cabal-force-upper-bound
