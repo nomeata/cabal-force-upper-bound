@@ -1,4 +1,4 @@
-cabal-force-upper-bounds
+cabal-force-upper-bound
 ========================
 
 What?

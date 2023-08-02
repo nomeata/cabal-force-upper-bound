@@ -21,4 +21,4 @@ for name in "${names[@]}"; do
   plans+=("dist-$name/cache/plan.json")
 done
 
-cabal-plan-bounds "${plans[@]}" -c cabal-plan-bounds.cabal
+cabal-plan-bounds "${plans[@]}" -c cabal-force-upper-bound.cabal
