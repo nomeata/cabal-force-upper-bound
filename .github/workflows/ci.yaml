@@ -116,7 +116,7 @@ jobs:
         echo -n "extra_flags=" >> $GITHUB_ENV
         ./static-build/cabal-force-upper-bound.linux --allow-newer *.cabal >> $GITHUB_ENV
 
-    - run: cabal build --ghc-options -Werror --project-file "ci-configs/${{ matrix.plan }}.config" ${{ env.extra_flags }}
+    - run: cabal build --minimize-conflict-set --ghc-options -Werror --project-file "ci-configs/${{ matrix.plan }}.config" ${{ env.extra_flags }}
 
     - run: mv dist-newstyle/cache/plan.json plan-${{ matrix.plan }}.json
 
